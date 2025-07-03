@@ -1,4 +1,12 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Alert,
+  Paper,
+} from "@mui/material";
 
 function RegisterForm({ onRegister }) {
   const [form, setForm] = useState({
@@ -16,7 +24,6 @@ function RegisterForm({ onRegister }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (!form.name || !form.email || !form.password || !form.confirmPassword) {
       setError("All fields are required");
       return;
@@ -26,56 +33,70 @@ function RegisterForm({ onRegister }) {
       return;
     }
     setError("");
-    // Call parent handler (you'll connect this to your API next)
     onRegister(form);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Register</h2>
-      {error && <div style={{ color: "red" }}>{error}</div>}
-      <div>
-        <label>Name:</label>
-        <input
-          type="text"
+    <Box
+      component={Paper}
+      elevation={3}
+      sx={{
+        maxWidth: 400,
+        mx: "auto",
+        mt: 8,
+        p: 4,
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+      }}
+    >
+      <Typography variant="h5" fontWeight={600} textAlign="center">
+        Register
+      </Typography>
+
+      {error && <Alert severity="error">{error}</Alert>}
+
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <TextField
+          label="Name"
           name="name"
           value={form.name}
           onChange={handleChange}
+          fullWidth
           required
         />
-      </div>
-      <div>
-        <label>Email:</label>
-        <input
-          type="email"
+        <TextField
+          label="Email"
           name="email"
+          type="email"
           value={form.email}
           onChange={handleChange}
+          fullWidth
           required
         />
-      </div>
-      <div>
-        <label>Password:</label>
-        <input
-          type="password"
+        <TextField
+          label="Password"
           name="password"
+          type="password"
           value={form.password}
           onChange={handleChange}
+          fullWidth
           required
         />
-      </div>
-      <div>
-        <label>Confirm Password:</label>
-        <input
-          type="password"
+        <TextField
+          label="Confirm Password"
           name="confirmPassword"
+          type="password"
           value={form.confirmPassword}
           onChange={handleChange}
+          fullWidth
           required
         />
-      </div>
-      <button type="submit">Register</button>
-    </form>
+        <Button type="submit" variant="contained" color="primary" fullWidth>
+          Register
+        </Button>
+      </form>
+    </Box>
   );
 }
 
