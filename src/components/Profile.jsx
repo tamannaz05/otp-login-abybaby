@@ -1,35 +1,77 @@
-import { useQuery } from "@tanstack/react-query";
-import api from "../services/api";
-import { useAuth } from "../contexts/AuthContext";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  CircularProgress,
+  Typography,
+  Paper,
+  Avatar,
+  Stack,
+  Button,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
+const dummyProfile = {
+  name: "Jane Doe",
+  email: "jane@example.com",
+  mobile: "9876543210",
+  company_name: "CodeCraft Inc.",
+  gst_no: "22ABCDE1234F1Z5",
+  pan_no: "ABCDE1234F",
+  location: "Bangalore, India",
+  profile_image: "https://i.pravatar.cc/150?img=5",
+};
 
 function Profile() {
-  const { token } = useAuth();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Example: fetch user_id from token or localStorage if your API needs it
-  const userId = 1; // Replace with actual logic if needed
+  useEffect(() => {
+    setTimeout(() => {
+      setData(dummyProfile);
+      setLoading(false);
+    }, 1500);
+  }, []);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["profile", userId],
-    queryFn: async () => {
-      const response = await api.get(`/post-details?user_id=${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return response.data;
-    },
-    enabled: !!token, // Only run if token exists
-  });
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/register");
+  };
 
-  if (isLoading) return <div>Loading profile...</div>;
-  if (error) return <div>Error loading profile.</div>;
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <div>
-      <h2>User Profile</h2>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-      {/* Render actual profile fields here */}
-    </div>
+    <Box maxWidth="600px" mx="auto" mt={4}>
+      <Box display="flex" justifyContent="flex-end" mb={2}>
+        <Button variant="outlined" color="error" onClick={handleLogout}>
+          Logout
+        </Button>
+      </Box>
+
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+          <Avatar
+            src={data.profile_image}
+            alt={data.name}
+            sx={{ width: 80, height: 80 }}
+          />
+          <Typography variant="h5">{data.name}</Typography>
+        </Stack>
+
+        <Typography>Email: {data.email}</Typography>
+        <Typography>Mobile: {data.mobile}</Typography>
+        <Typography>Company: {data.company_name}</Typography>
+        <Typography>GST No: {data.gst_no}</Typography>
+        <Typography>PAN No: {data.pan_no}</Typography>
+        <Typography>Location: {data.location}</Typography>
+      </Paper>
+    </Box>
   );
 }
 
